@@ -10,5 +10,7 @@ void Serial_SendArray(uint8_t *array, uint16_t length);
 void Serial_SendString(char *str);
 void Serial_SendNumber(uint32_t num, uint8_t len);
 void Serial_Printf(char *format, ...);
+uint8_t Serial_GetRxData(void);
+uint8_t Serial_GetRxFlag(void);
 
 #endif
