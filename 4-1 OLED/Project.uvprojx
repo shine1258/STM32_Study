@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Startup;C:\Users\Shine2048\AppData\Local\Arm\Packs\ARM\CMSIS\6.1.0\CMSIS\Core\Include;.\User;.\Library;.\System;.\Hardware</IncludePath>
+              <IncludePath>.\Startup;C:\Users\Shine2048\AppData\Local\Arm\Packs\ARM\CMSIS\6.1.0\CMSIS\Core\Include;C:\Users\YXmtk\AppData\Local\Arm\Packs\ARM\CMSIS\6.1.0\CMSIS\Core\Include;.\User;.\Library;.\System;.\Hardware</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
