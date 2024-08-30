@@ -19,7 +19,13 @@ int main(void)
 //	
 //	Serial_SendString("Hello world!\r\n");
 	
-	Serial_SendNumber(12345, 5);
+//	Serial_SendNumber(12345, 5);
+	
+//	printf("Num = %d\r\n", 666);
+	
+	char str[100];
+	sprintf(str, "Num = %d\r\n", 666);
+	Serial_SendString(str);	
 
 	while(1)		
 	{
