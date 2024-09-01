@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "mpu6050_reg.h": "c",
+        "mpu6050.h": "c"
+    }
+}
