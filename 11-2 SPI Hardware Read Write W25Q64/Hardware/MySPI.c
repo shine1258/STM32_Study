@@ -1,18 +1,23 @@
 #include "stm32f10x.h"
 
 void MySPI_W_SS(uint8_t bitValue);
-void MySPI_W_SCK(uint8_t bitValue);
 
 /// @brief MySPI初始化, 使用SPI模式0
 /// @param
 void MySPI_Init(void)
 {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 
     GPIO_InitTypeDef GPIO_InitStructure;
 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_7;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -21,28 +26,26 @@ void MySPI_Init(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-    MySPI_W_SS(1);  // 默认不选中从机
-    MySPI_W_SCK(0); // 默认时钟低电平
+    SPI_InitTypeDef SPI_InitStructure;
+    SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128;
+    SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
+    SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
+    SPI_InitStructure.SPI_CRCPolynomial = 7;
+    SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
+    SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+    SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+    SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+    SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+    SPI_Init(SPI1, &SPI_InitStructure);
+
+    SPI_Cmd(SPI1, ENABLE);
+
+    MySPI_W_SS(1); // 默认不选中从机
 }
 
 void MySPI_W_SS(uint8_t bitValue)
 {
     GPIO_WriteBit(GPIOA, GPIO_Pin_4, (BitAction)bitValue);
-}
-
-void MySPI_W_SCK(uint8_t bitValue)
-{
-    GPIO_WriteBit(GPIOA, GPIO_Pin_5, (BitAction)bitValue);
-}
-
-void MySPI_W_MOSI(uint8_t bitValue)
-{
-    GPIO_WriteBit(GPIOA, GPIO_Pin_7, (BitAction)bitValue);
-}
-
-uint8_t MySPI_R_MISO(void)
-{
-    return GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6);
 }
 
 void MySPI_Start(void)
@@ -57,15 +60,10 @@ void MySPI_Stop(void)
 
 uint8_t MySPI_SwapByte(uint8_t byte)
 {
-    uint8_t received = 0;
-
-    for (uint8_t i = 0; i < 8; i++)
-    {
-        MySPI_W_MOSI(byte & (0x80 >> i));
-        MySPI_W_SCK(1);
-        received |= (MySPI_R_MISO() << (7 - i));
-        MySPI_W_SCK(0);
-    }
-
-    return received;
+    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) != SET)
+        ;
+    SPI_I2S_SendData(SPI1, byte);
+    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) != SET)
+        ;
+    return SPI_I2S_ReceiveData(SPI1);
 }
