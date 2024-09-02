@@ -22,14 +22,14 @@ int main(void)
 	OLED_ShowHexNum(1, 5, MID, 2);
 	OLED_ShowHexNum(1, 12, DID, 4);
 
-	W25Q64_SectorErase(0x000000);
-	W25Q64_PageProgram(0x000000, writeData, 4);
-	W25Q64_ReadData(0x000000, readData, 4);
-
 	OLED_ShowHexNum(2, 3, writeData[0], 2);
 	OLED_ShowHexNum(2, 6, writeData[1], 2);
 	OLED_ShowHexNum(2, 9, writeData[2], 2);
 	OLED_ShowHexNum(2, 12, writeData[3], 2);
+
+	W25Q64_SectorErase(0x000000);
+	W25Q64_PageProgram(0x000000, writeData, 4);
+	W25Q64_ReadData(0x000000, readData, 4);
 
 	OLED_ShowHexNum(3, 3, readData[0], 2);
 	OLED_ShowHexNum(3, 6, readData[1], 2);
@@ -38,5 +38,5 @@ int main(void)
 
 	while (1)
 	{
-		}
+	}
 }
